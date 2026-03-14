@@ -5,7 +5,7 @@ import {
   Sparkles, Upload, FileText, ArrowRight, 
   MessageSquare, Play, CheckCircle2, Mic, 
   Send, Loader2, Award, ChevronLeft, RefreshCw,
-  Activity, Target, Clock, TrendingUp, AlertCircle, ChevronDown, Menu, X
+  Activity, Target, Clock, TrendingUp, AlertCircle, ChevronDown, Menu, X, Download, Volume2, History
 } from 'lucide-react';
 
 import Platform from './pages/Platform';
@@ -46,6 +46,58 @@ export default function App() {
   const [questionCount, setQuestionCount] = useState(0);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const chatRef = useRef<any>(null);
+
+  /*
+  // ==========================================
+  // FUTURE IMPROVEMENT 1: Voice Input (Speech-to-Text)
+  // ==========================================
+  // Allows users to practice their pitch out loud.
+  const [isRecording, setIsRecording] = useState(false);
+  const startRecording = () => {
+    if ('webkitSpeechRecognition' in window) {
+      const recognition = new (window as any).webkitSpeechRecognition();
+      recognition.continuous = false;
+      recognition.interimResults = false;
+      recognition.onstart = () => setIsRecording(true);
+      recognition.onresult = (event: any) => {
+        const transcript = event.results[0][0].transcript;
+        setInputValue(prev => prev + (prev ? ' ' : '') + transcript);
+      };
+      recognition.onerror = () => setIsRecording(false);
+      recognition.onend = () => setIsRecording(false);
+      recognition.start();
+    } else {
+      alert("Speech recognition is not supported in this browser.");
+    }
+  };
+  */
+
+  /*
+  // ==========================================
+  // FUTURE IMPROVEMENT 2: Text-to-Speech (Aurora Voice)
+  // ==========================================
+  // Makes Aurora read her feedback out loud.
+  const speakText = (text: string) => {
+    if ('speechSynthesis' in window) {
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.rate = 0.9; // Slightly slower for clarity
+      utterance.pitch = 1.1; // Slightly higher pitch
+      window.speechSynthesis.speak(utterance);
+    }
+  };
+  */
+
+  /*
+  // ==========================================
+  // FUTURE IMPROVEMENT 3: Session History (LocalStorage)
+  // ==========================================
+  // Saves past reports so users can track progress.
+  const saveReportToHistory = (score: number, feedback: string) => {
+    const history = JSON.parse(localStorage.getItem('aurora_history') || '[]');
+    history.push({ date: new Date().toISOString(), score, feedback });
+    localStorage.setItem('aurora_history', JSON.stringify(history));
+  };
+  */
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -124,6 +176,23 @@ export default function App() {
     setMessages([]);
     
     try {
+      /*
+      // ==========================================
+      // FUTURE IMPROVEMENT 4: Real Gemini API Toggle
+      // ==========================================
+      // Uncomment this block and delete the mock chatRef below when you have a valid API key.
+      const apiKey = process.env.GEMINI_API_KEY?.trim();
+      const ai = new GoogleGenAI({ apiKey: apiKey || 'dummy-key' });
+      const systemInstruction = mode === 'roast' 
+        ? `You are a tough, critical startup investor. The user is pitching their startup. Their pitch context is: "${pitchText}". Roast their pitch, ask hard questions about their business model, competitors, and traction. Be direct and critical. Ask one question at a time.`
+        : `You are a supportive pitch coach. The user is pitching their startup. Their pitch context is: "${pitchText}". Help them polish their pitch, make it more impactful, and improve their storytelling. Be encouraging but constructive. Ask one question at a time to guide them.`;
+
+      chatRef.current = ai.chats.create({
+        model: "gemini-3-flash-preview",
+        config: { systemInstruction }
+      });
+      */
+
       // Mock Chat implementation to bypass API key requirement for the demo scenario
       let turnCount = 0;
       chatRef.current = {
@@ -625,6 +694,20 @@ export default function App() {
                             <Sparkles className="w-4 h-4 text-white" />
                           </div>
                           <span className="text-sm font-bold text-white/70">Aurora Mentor</span>
+                          
+                          {/*
+                          // ==========================================
+                          // FUTURE IMPROVEMENT 2: Text-to-Speech Button
+                          // ==========================================
+                          // Add this button to let users hear Aurora's feedback.
+                          <button 
+                            onClick={() => speakText(msg.content)}
+                            className="ml-2 p-1 text-white/40 hover:text-white/80 transition-colors"
+                            title="Listen to feedback"
+                          >
+                            <Volume2 className="w-4 h-4" />
+                          </button>
+                          */}
                         </div>
                       )}
                       <div className={`
@@ -670,6 +753,21 @@ export default function App() {
                     disabled={isTyping || !chatRef.current}
                   />
                   <div className="flex items-center gap-2 p-2">
+                    {/*
+                    // ==========================================
+                    // FUTURE IMPROVEMENT 1: Voice Input Button
+                    // ==========================================
+                    // Replace the static Mic button below with this interactive one.
+                    <button 
+                      type="button" 
+                      onClick={startRecording}
+                      className={`p-4 rounded-full transition-colors ${isRecording ? 'bg-red-500/80 text-white animate-pulse' : 'text-white/70 hover:text-white hover:bg-white/20'}`}
+                      disabled={isTyping || !chatRef.current}
+                      title="Hold to speak"
+                    >
+                      <Mic className="w-6 h-6" />
+                    </button>
+                    */}
                     <button type="button" className="p-4 text-white/70 hover:text-white hover:bg-white/20 rounded-full transition-colors" disabled={isTyping || !chatRef.current}>
                       <Mic className="w-6 h-6" />
                     </button>
